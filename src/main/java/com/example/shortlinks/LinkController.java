@@ -1,8 +1,11 @@
 package com.example.shortlinks;
 
+import com.example.shortlinks.dto.LinkRequest;
+import com.example.shortlinks.dto.LinkResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/api")
@@ -15,20 +18,14 @@ public class LinkController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<Link> shortenLink(@RequestBody ShortenRequest shortenRequest) {
-        Link link = linkService.shortenUrl(shortenRequest.getOriginalUrl());
-        return ResponseEntity.ok(link);
+    public ResponseEntity<LinkResponse> shortenLink(@RequestBody LinkRequest request) {
+        LinkResponse response = linkService.shortenUrl(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{shortCode}")
-    public ResponseEntity<String> getLink(@PathVariable String shortCode) {
+    public LinkResponse redirect(@PathVariable String shortCode) {
         String originalUrl = linkService.getOriginalUrl(shortCode);
-        return ResponseEntity.ok(originalUrl);
+        return new LinkResponse(originalUrl, "http://localhost:8080/" + shortCode);
     }
-}
-
-class ShortenRequest {
-    private String originalUrl;
-
-    public String getOriginalUrl() { return originalUrl; }
 }
