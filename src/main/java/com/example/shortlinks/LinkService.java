@@ -31,9 +31,13 @@ public class LinkService {
         return new LinkResponse(request.getUrl(), baseUrl + shortCode);
     }
 
-    public String getOriginalUrl(String shortCode) {
-        Link link = linkRepository.findByShortCode(shortCode)
+    public Link get(String shortCode) {
+        return linkRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new IllegalArgumentException("No link found for " + shortCode));
+    }
+
+    public String getOriginalUrl(String shortCode) {
+        Link link = get(shortCode);
         link.setUses(link.getUses() + 1);
         linkRepository.save(link);
         return link.getOriginalUrl();
